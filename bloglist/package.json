@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --verbose",
     "dev": "nodemon index.js"
   },
   "author": "Giuliano Rosso",
   "license": "MIT",
   "devDependencies": {
+    "jest": "^29.1.2",
     "nodemon": "^2.0.20"
   },
   "dependencies": {
