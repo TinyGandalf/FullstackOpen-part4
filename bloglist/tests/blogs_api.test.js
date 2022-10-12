@@ -208,6 +208,73 @@ describe('when some blogs are already present', () => {
       expect(blogsAfter.length).toEqual(blogsBefore.length)
     })
   })
+
+  describe('updating blogs', () => { 
+    test('updating an existing blog title field returns code 200 and the blog is updated', async () => { 
+      let response = await api.get('/api/blogs')
+      const blogsBefore = response.body
+
+      const blogToUpdate = blogsBefore[0]
+      const updatedBlog = {
+        ...blogToUpdate,
+        title: 'Something funny'
+      }
+
+      await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(updatedBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      response = await api.get('/api/blogs')
+      const blogsAfter = response.body
+      
+      expect(blogsAfter.length).toEqual(blogsBefore.length)
+
+      const blogAfter = blogsAfter.find(blog => blog.id === blogToUpdate.id)
+      expect(blogAfter).toStrictEqual(updatedBlog)
+    })
+
+    test('updating an existing blog likes field returns code 200 and the blog is updated', async () => { 
+      let response = await api.get('/api/blogs')
+      const blogsBefore = response.body
+
+      const blogToUpdate = blogsBefore[0]
+      const updatedBlog = {
+        ...blogToUpdate,
+        likes: 1056
+      }
+
+      await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(updatedBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      response = await api.get('/api/blogs')
+      const blogsAfter = response.body
+      
+      expect(blogsAfter.length).toEqual(blogsBefore.length)
+
+      const blogAfter = blogsAfter.find(blog => blog.id === blogToUpdate.id)
+      expect(blogAfter).toStrictEqual(updatedBlog)
+    })
+
+    test('updating an non existing blog returns code 404', async () => { 
+      let response = await api.get('/api/blogs')
+      const blogsBefore = response.body
+
+      let id = '63474a7f4a3a2ca8186626f7'
+      while (blogsBefore.find(blog => blog.id === id)) {
+        randomNumber = Math.floor(Math.random() * 10)
+        id = `${randomNumber}474a7f4a3a2ca8186626f7`
+      }
+
+      await api
+        .put(`/api/blogs/${id}`)
+        .expect(404)
+    })
+  })
 })
 
 afterAll(async () => {
