@@ -168,6 +168,46 @@ describe('when some blogs are already present', () => {
         .expect(400)
     })
   })
+
+  describe('deleting blogs', () => { 
+    test('deleting an existing blog returns code 204 and the blog is gone', async () => { 
+      let response = await api.get('/api/blogs')
+      const blogsBefore = response.body
+
+      const blogToDelete = blogsBefore[0]
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204)
+
+      response = await api.get('/api/blogs')
+      const blogsAfter = response.body
+      
+      expect(blogsAfter.length).toEqual(blogsBefore.length - 1)
+
+      const blogAfter = blogsAfter.find(blog => blog.id === blogToDelete.id)
+      expect(blogAfter).toBeUndefined()
+    })
+
+    test('deleting an non existing blog returns code 204 and no changes are made', async () => { 
+      let response = await api.get('/api/blogs')
+      const blogsBefore = response.body
+
+      let id = '63474a7f4a3a2ca8186626f7'
+      while (blogsBefore.find(blog => blog.id === id)) {
+        randomNumber = Math.floor(Math.random() * 10)
+        id = `${randomNumber}474a7f4a3a2ca8186626f7`
+      }
+
+      await api
+        .delete(`/api/blogs/${id}`)
+        .expect(204)
+
+      response = await api.get('/api/blogs')
+      const blogsAfter = response.body
+
+      expect(blogsAfter.length).toEqual(blogsBefore.length)
+    })
+  })
 })
 
 afterAll(async () => {
