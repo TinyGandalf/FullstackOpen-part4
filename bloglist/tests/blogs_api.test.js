@@ -81,7 +81,7 @@ test('the right amount of blogs are returned', async () => {
 test('the blogs returned contain their id as "id"', async () => {
   const response = await api.get('/api/blogs')
 
-  for (const blog in response.body) {
+  for (const blog of response.body) {
     expect(blog.id).toBeDefined()
   }
 })
