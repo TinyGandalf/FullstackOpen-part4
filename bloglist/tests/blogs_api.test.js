@@ -110,6 +110,38 @@ test('a valid blog can be added ', async () => {
   )
 })
 
+test('all blogs should have a likes field', async () => {
+  const response = await api.get('/api/blogs')
+  const blogsAtEnd = response.body
+
+  const likeFields = blogsAtEnd.map(n => n.likes)
+  expect(likeFields).toBeDefined()
+  expect(likeFields).not.toBeNaN()
+})
+
+test('if the likes field is ommited it defaults to 0', async () => {
+  const newBlog = {
+    title: "React anti-patterns",
+    author: "Cichael Mhan",
+    url: "https://angularjs.com/"
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const blogsAtEnd = response.body
+
+  expect(blogsAtEnd).toHaveLength(initialBlogs.length + 1)
+
+  const blog = blogsAtEnd.filter(blog => blog.title === newBlog.title)
+  expect(blog[0]).toBeDefined()
+  expect(blog[0].likes).toEqual(0)
+})
+
 afterAll(async () => {
   mongoose.connection.close()
 })
