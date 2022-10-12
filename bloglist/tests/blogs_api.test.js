@@ -86,6 +86,30 @@ test('the blogs returned contain their id as "id"', async () => {
   }
 })
 
+test('a valid blog can be added ', async () => {
+  const newBlog = {
+    title: "React anti-patterns",
+    author: "Cichael Mhan",
+    url: "https://angularjs.com/",
+    likes: 70
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const blogsAtEnd = response.body
+
+  expect(blogsAtEnd).toHaveLength(initialBlogs.length + 1)
+  const titles = blogsAtEnd.map(n => n.title)
+  expect(titles).toContain(
+    'React anti-patterns'
+  )
+})
+
 afterAll(async () => {
   mongoose.connection.close()
 })
