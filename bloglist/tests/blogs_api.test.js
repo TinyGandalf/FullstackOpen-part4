@@ -142,6 +142,34 @@ test('if the likes field is ommited it defaults to 0', async () => {
   expect(blog[0].likes).toEqual(0)
 })
 
+test('if the title field is ommited the api returns a 400 error', async () => {
+  const newBlog = {
+    //title: "React anti-patterns",
+    author: "Cichael Mhan",
+    url: "https://angularjs.com/",
+    likes: 0
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+})
+
+test('if the url field is ommited the api returns a 400 error', async () => {
+  const newBlog = {
+    title: "React anti-patterns",
+    author: "Cichael Mhan",
+    //url: "https://angularjs.com/",
+    likes: 0
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+})
+
 afterAll(async () => {
   mongoose.connection.close()
 })
