@@ -39,6 +39,29 @@ const initialBlogs = [
   }
 ]
 
+const initialUsers = [
+  {
+    username: 'MrDr',
+    name: 'Mister Doctor',
+    passwordHash: 'kdkdkdkdkdkdkdkdkdkd'
+  },
+  {
+    username: 'MrsDr',
+    name: 'Miss Doctor',
+    passwordHash: 'asdadasdasdasdasdasd'
+  },
+  {
+    username: 'Some',
+    name: 'Some One',
+    passwordHash: 'kdkdkdkdkdkdkdkdkdkd'
+  },
+  {
+    username: 'Nobody',
+    name: '',
+    passwordHash: 'kdkdkdkdkdkdkdkdkdkd'
+  }
+]
+
 const nonExistingBlogId = async () => {
   const blog = new Blog({ title: "Throwaway", author: "Me"})
   const savedBlog = await blog.save()
@@ -51,5 +74,6 @@ const nonExistingBlogId = async () => {
 
 module.exports = {
   initialBlogs,
+  initialUsers,
   nonExistingBlogId
 }
