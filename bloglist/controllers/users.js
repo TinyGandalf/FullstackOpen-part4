@@ -13,7 +13,13 @@ usersRouter.post('/', async (request, response) => {
 
   if (!username) return response.status(400).json({ error: 'no username provided' })
   if (!password) return response.status(400).json({ error: 'no password provided' })
-
+  
+  if (username.length <= 3) return response.status(400).json({ error: 'username should be at least 3 characters long' })
+  if (password.length <= 3) return response.status(400).json({ error: 'password should be at least 3 characters long' })
+  
+  const existingUser = await User.findOne({ username })
+  if (existingUser) return response.status(400).json({ error: 'a user with that username already exists' })
+  
   const userObject = new User({
     username,
     name: name ?? '',
