@@ -162,6 +162,73 @@ describe('creating users', () => {
   })
 })
 
+describe('user login', () => {
+  beforeAll(async () => {
+    const userData = {
+      username: 'LoginSir',
+      name: 'Login Sir',
+      password: 'shakenmartini'
+    }
+
+    await api
+      .post('/api/users')
+      .send(userData)
+  })
+
+  test('valid login returns status 200, username and JWT', async () => {
+    const loginData = {
+      username: 'LoginSir',
+      password: 'shakenmartini'
+    }
+  
+    const response = await api
+      .post('/api/users/login')
+      .send(loginData)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  
+    expect(response.body).toBeDefined()
+    const { id, username, token } = response.body
+    expect(id).toBeDefined()
+    expect(username).toBe(loginData.username)
+    expect(token).toBeDefined()
+  })
+
+  test('invalid login (user not found) returns status 401 and error message', async () => {
+    const loginData = {
+      username: '',
+      password: 'shakenmartini'
+    }
+  
+    const response = await api
+      .post('/api/users/login')
+      .send(loginData)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+  
+    expect(response.body).toBeDefined()
+    const { error } = response.body
+    expect(error).toBe('invalid username or password')
+  })
+
+  test('invalid login (password incorrect) returns status 401 and error message', async () => {
+    const loginData = {
+      username: 'LoginSir',
+      password: 'stirredmartini'
+    }
+  
+    const response = await api
+      .post('/api/users/login')
+      .send(loginData)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+  
+    expect(response.body).toBeDefined()
+    const { error } = response.body
+    expect(error).toBe('invalid username or password')
+  })
+})
+
 afterAll(async () => {
   mongoose.connection.close()
 })
