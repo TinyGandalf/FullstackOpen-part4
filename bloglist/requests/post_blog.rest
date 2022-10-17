@@ -1,6 +1,6 @@
 POST http://localhost:3003/api/blogs HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ildvd2llIiwiaWQiOiI2MzRkYzlhOTZlZDM2YzI1MTZiMTYwMTAiLCJpYXQiOjE2NjYwNDIyODV9.Wdb3oUtQ8W7h6J9qI8ypzw2LYnNU7hv50yzL-d5HeJA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ildvd2llIiwiaWQiOiI2MzRkY2U0MzJiMTA1MWEyMjVhMWE0MTUiLCJpYXQiOjE2NjYwNDM1MDZ9.EFECL0UEbOj3ZAZ_H9oJLnDP80ruZEX32sL8c8UP5y4
 
 {
   "title": "REST testing in a nutshell",

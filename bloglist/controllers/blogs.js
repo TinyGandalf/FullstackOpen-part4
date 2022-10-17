@@ -30,6 +30,11 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
+  if (!request.user) return response.status(401).json({ error: 'invalid login' })
+
+  const blog = await Blog.findById(request.params.id)
+  if (blog?.user?.toString() !== request.user.id) return response.status(401).json({ error: 'invalid login' })
+
   await Blog.findByIdAndRemove(request.params.id)
 
   response.status(204).end()
