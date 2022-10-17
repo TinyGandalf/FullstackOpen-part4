@@ -24,19 +24,6 @@ describe('when some blogs are already present', () => {
     expect(response.body).toHaveLength(initialBlogs.length)
   })
 
-  test('blogs are returned as JSON', async () => {
-    await api
-      .get('/api/blogs')
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
-  })
-
-  test('the right amount of blogs are returned', async () => {
-    const response = await api.get('/api/blogs')
-
-    expect(response.body).toHaveLength(initialBlogs.length)
-  })
-
   test('the blogs returned contain their id as "id"', async () => {
     const response = await api.get('/api/blogs')
 

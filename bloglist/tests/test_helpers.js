@@ -63,7 +63,7 @@ const initialUsers = [
 ]
 
 const nonExistingBlogId = async () => {
-  const blog = new Blog({ title: "Throwaway", author: "Me"})
+  const blog = new Blog({ title: "Throwaway", author: "Me" })
   const savedBlog = await blog.save()
 
   const id = savedBlog.id
