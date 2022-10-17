@@ -14,7 +14,10 @@ blogsRouter.post('/', async (request, response) => {
     return response.status(400).end()
   }
 
-  const user = await User.findOne({})
+  if (!request.user) return response.status(401).json({ error: 'invalid login' })
+
+  const user = await User.findById(request.user.id)
+  if (!user) return response.status(401).json({ error: 'invalid login' })
 
   const blog = new Blog({
     ...request.body,
