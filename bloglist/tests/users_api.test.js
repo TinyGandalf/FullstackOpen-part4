@@ -105,6 +105,61 @@ describe('creating users', () => {
     expect(response.body).toBeDefined()
     expect(response.body.error).toBe('no password provided')
   })
+
+  test('can\'t create a user with an already used username', async () => {
+    const userData = {
+      username: 'MrSir',
+      name: 'Mister Sir',
+      password: 'shakenmartini'
+    }
+  
+    await api
+      .post('/api/users')
+      .send(userData)
+
+    const response = await api
+      .post('/api/users')
+      .send(userData)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  
+    expect(response.body).toBeDefined()
+    expect(response.body.error).toBe('a user with that username already exists')
+  })
+
+  test('username should have a length >= 3 characters', async () => {
+    const userData = {
+      username: 'Do',
+      name: 'Mister Sir',
+      password: 'shakenmartini'
+    }
+  
+    const response = await api
+      .post('/api/users')
+      .send(userData)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  
+    expect(response.body).toBeDefined()
+    expect(response.body.error).toBe('username should be at least 3 characters long')
+  })
+
+  test('password should have a length >= 3 characters', async () => {
+    const userData = {
+      username: 'MrSr',
+      name: 'Mister Sir',
+      password: 'sh'
+    }
+  
+    const response = await api
+      .post('/api/users')
+      .send(userData)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  
+    expect(response.body).toBeDefined()
+    expect(response.body.error).toBe('password should be at least 3 characters long')
+  })
 })
 
 afterAll(async () => {
