@@ -3,7 +3,32 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const { initialBlogs, nonExistingBlogId } = require('./test_helpers')
+
+let testUser, testUserId, testToken;
+
+beforeAll(async () => {
+  await User.findOneAndRemove({ username: 'MrBlog' })
+  testUser = {
+    username: 'MrBlog',
+    password: 'shakenmartini'
+  }
+
+  let response = await api
+    .post('/api/users')
+    .send(testUser)
+    .expect(201)
+
+  testUserId = response.body.id
+
+  response = await api
+    .post('/api/users/login')
+    .send(testUser)
+    .expect(200)
+
+  testToken = response.body.token
+})
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -53,6 +78,7 @@ describe('when some blogs are already present', () => {
       await api
         .post('/api/blogs')
         .send(newBlog)
+        .set({ Authorization: `Bearer ${testToken}` })
         .expect(201)
         .expect('Content-Type', /application\/json/)
   
@@ -75,6 +101,7 @@ describe('when some blogs are already present', () => {
   
       await api
         .post('/api/blogs')
+        .set({ Authorization: `Bearer ${testToken}` })
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -118,39 +145,55 @@ describe('when some blogs are already present', () => {
     })
   })
 
-  describe('deleting blogs', () => { 
-    test('deleting an existing blog returns code 204 and the blog is gone', async () => { 
+  describe('deleting blogs', () => {
+    test('deleting a user\'s own blog returns code 204', async () => { 
+      const blogToDelete = {
+        title: "React anti-patterns",
+        author: "Cichael Mhan",
+        url: "https://angularjs.com/",
+        likes: 70,
+        user: testUserId
+      }
+  
+      const response = await api
+        .post('/api/blogs')
+        .send(blogToDelete)
+        .set({ Authorization: `Bearer ${testToken}` })
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+      await api
+        .delete(`/api/blogs/${response.body.id}`)
+        .set({ Authorization: `Bearer ${testToken}` })
+        .expect(204)
+    })
+
+    test('deleting another user\'s blog returns code 401', async () => { 
       let response = await api.get('/api/blogs')
       const blogsBefore = response.body
 
       const blogToDelete = blogsBefore[0]
       await api
         .delete(`/api/blogs/${blogToDelete.id}`)
-        .expect(204)
-
-      response = await api.get('/api/blogs')
-      const blogsAfter = response.body
-      
-      expect(blogsAfter.length).toEqual(blogsBefore.length - 1)
-
-      const blogAfter = blogsAfter.find(blog => blog.id === blogToDelete.id)
-      expect(blogAfter).toBeUndefined()
+        .set({ Authorization: `Bearer ${testToken}` })
+        .expect(401)
     })
 
-    test('deleting an non existing blog returns code 204 and no changes are made', async () => { 
-      let response = await api.get('/api/blogs')
-      const blogsBefore = response.body
-
+    test('deleting a non existing blog without authentication blog returns code 401', async () => { 
       let id = await nonExistingBlogId()
 
       await api
         .delete(`/api/blogs/${id}`)
-        .expect(204)
+        .expect(401)
+    })
 
-      response = await api.get('/api/blogs')
-      const blogsAfter = response.body
+    test('deleting a non existing blog with authentication returns code 401', async () => { 
+      let id = await nonExistingBlogId()
 
-      expect(blogsAfter.length).toEqual(blogsBefore.length)
+      await api
+        .delete(`/api/blogs/${id}`)
+        .set({ Authorization: `Bearer ${testToken}` })
+        .expect(401)
     })
   })
 
